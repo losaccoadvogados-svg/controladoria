@@ -127,7 +127,7 @@ function Modal({ isOpen, onClose, processo, sheetId }) {
             Após salvar na planilha, clique em "Atualizar Dados" no app para ver as alterações.
           </p>
           <a href={"https://docs.google.com/spreadsheets/d/" + sheetId + "/edit"} target="_blank" rel="noopener noreferrer"
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "12px 24px", borderRadius: "10px", background: "linear-gradient(135deg, #0f766e, #14b8a6)", color: "#fff", fontSize: "14px", fontWeight: 700, textDecoration: "none", boxShadow: "0 4px 15px rgba(20,184,166,0.3)" }}>
+            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "12px 24px", borderRadius: "10px", background: "linear-gradient(135deg, #caa461, #d5ae6b)", color: "#485158", fontSize: "14px", fontWeight: 700, textDecoration: "none", boxShadow: "0 4px 15px rgba(202,164,97,0.3)" }}>
             Abrir Google Sheets &rarr;
           </a>
         </div>
@@ -167,38 +167,37 @@ function LoginScreen({ onLogin }) {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)", fontFamily: "'Outfit', -apple-system, sans-serif", padding: "20px" }}>
-      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#485158", fontFamily: "'Outfit', -apple-system, sans-serif", padding: "20px", position: "relative", overflow: "hidden" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
       <style>{"\n        @keyframes shake { 0%,100% { transform:translateX(0); } 20%,60% { transform:translateX(-8px); } 40%,80% { transform:translateX(8px); } }\n        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }\n      "}</style>
-      <div style={{ width: "420px", maxWidth: "100%", animation: "fadeIn 0.5s ease" }}>
+      <div style={{ position: "absolute", top: "-100px", right: "-100px", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(202,164,97,0.08) 0%, transparent 70%)" }} />
+      <div style={{ position: "absolute", bottom: "-80px", left: "-80px", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(202,164,97,0.06) 0%, transparent 70%)" }} />
+      <div style={{ width: "420px", maxWidth: "100%", animation: "fadeIn 0.5s ease", position: "relative" }}>
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
-          <div style={{ width: "64px", height: "64px", borderRadius: "16px", background: "linear-gradient(135deg, #0f766e, #14b8a6)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", boxShadow: "0 8px 30px rgba(20,184,166,0.3)" }}>
-            <span style={{ fontSize: "28px", color: "#fff" }}>&#128274;</span>
-          </div>
-          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "28px", fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>Controladoria Processual</h1>
-          <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Acesso restrito ao escritório</p>
+          <img src={process.env.PUBLIC_URL + "/LOGOTIPO%20APROVADO%20(11).png"} alt="Losacco Advogados" style={{ maxWidth: "280px", width: "100%", marginBottom: "24px" }} />
+          <p style={{ fontSize: "15px", color: "#d5ae6b", margin: 0, fontWeight: 500, letterSpacing: "2px", textTransform: "uppercase" }}>Controladoria Processual</p>
         </div>
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "32px 28px", backdropFilter: "blur(10px)", animation: shaking ? "shake 0.5s ease" : "none" }}>
+        <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(202,164,97,0.15)", borderRadius: "16px", padding: "32px 28px", backdropFilter: "blur(10px)", animation: shaking ? "shake 0.5s ease" : "none" }}>
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>Senha de acesso</label>
+            <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "#d5ae6b", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "8px" }}>Senha de acesso</label>
             <input
               type="password"
               value={senha}
               onChange={function(e) { setSenha(e.target.value); setErro(false); }}
               onKeyDown={function(e) { if (e.key === "Enter") handleSubmit(e); }}
               placeholder="Digite a senha"
-              style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: erro ? "2px solid #ef4444" : "1.5px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.05)", color: "#fff", fontSize: "15px", outline: "none", boxSizing: "border-box", transition: "border 0.2s" }}
+              style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: erro ? "2px solid #ef4444" : "1.5px solid rgba(202,164,97,0.25)", background: "rgba(255,255,255,0.05)", color: "#fff", fontSize: "15px", outline: "none", boxSizing: "border-box", transition: "border 0.2s" }}
             />
             {erro && <p style={{ color: "#ef4444", fontSize: "13px", margin: "8px 0 0", fontWeight: 500 }}>Senha incorreta. Tente novamente.</p>}
           </div>
           <button onClick={handleSubmit}
-            style={{ width: "100%", padding: "14px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #0f766e, #14b8a6)", color: "#fff", fontSize: "15px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 15px rgba(20,184,166,0.3)", transition: "transform 0.15s" }}
+            style={{ width: "100%", padding: "14px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #caa461, #d5ae6b)", color: "#485158", fontSize: "15px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 15px rgba(202,164,97,0.3)", transition: "transform 0.15s" }}
             onMouseOver={function(e) { e.currentTarget.style.transform="translateY(-1px)"; }}
             onMouseOut={function(e) { e.currentTarget.style.transform="translateY(0)"; }}>
             Entrar
           </button>
         </div>
-        <p style={{ textAlign: "center", fontSize: "12px", color: "#475569", marginTop: "20px" }}>Direito de Família · Acesso protegido</p>
+        <p style={{ textAlign: "center", fontSize: "11px", color: "rgba(213,174,107,0.5)", marginTop: "24px", letterSpacing: "1px" }}>Acesso restrito</p>
       </div>
     </div>
   );
@@ -295,32 +294,36 @@ export default function App() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f4f5f7", fontFamily: "'Outfit', -apple-system, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#f5f3ef", fontFamily: "'Outfit', -apple-system, sans-serif" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
       <style>{"\n        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }\n        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }\n        .row-hover { transition: box-shadow 0.2s; }\n        .row-hover:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important; }\n        .card-hover { transition: all 0.2s; }\n        .card-hover:hover { transform: translateY(-3px) !important; box-shadow: 0 12px 28px rgba(0,0,0,0.08) !important; }\n        * { box-sizing: border-box; }\n        @media (max-width: 768px) {\n          .grid-stats { grid-template-columns: 1fr 1fr !important; }\n          .grid-filters { flex-direction: column !important; }\n          .grid-filters > * { width: 100% !important; flex: none !important; }\n          .expanded-grid { grid-template-columns: 1fr !important; }\n        }\n      "}</style>
 
-      <div style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%)", padding: "28px 28px 24px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-40px", right: "-40px", width: "200px", height: "200px", borderRadius: "50%", background: "radial-gradient(circle, rgba(20,184,166,0.08) 0%, transparent 70%)" }} />
+      <div style={{ background: "#485158", padding: "28px 28px 24px", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "-40px", right: "-40px", width: "200px", height: "200px", borderRadius: "50%", background: "radial-gradient(circle, rgba(202,164,97,0.08) 0%, transparent 70%)" }} />
         <div style={{ maxWidth: "1300px", margin: "0 auto", position: "relative" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
-            <div>
-              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "26px", fontWeight: 800, color: "#fff", margin: "0 0 4px", letterSpacing: "-0.5px" }}>Controladoria Processual</h1>
-              <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>
-                Direito de Família {lastUpdate ? " · Atualizado às " + lastUpdate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : " · Carregando..."}
-              </p>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+              <img src={process.env.PUBLIC_URL + "/LOGOTIPO%20APROVADO%20MARCA%20D%20AGUA%202%20(8).png"} alt="Losacco" style={{ height: "40px" }} />
+              <div>
+                <h1 style={{ fontSize: "20px", fontWeight: 700, color: "#fff", margin: "0 0 2px", letterSpacing: "-0.3px" }}>Controladoria Processual</h1>
+                <p style={{ fontSize: "12px", color: "#d5ae6b", margin: 0 }}>
+                  {lastUpdate ? "Atualizado às " + lastUpdate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "Carregando..."}
+                </p>
+              </div>
             </div>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
               <button onClick={fetchData} disabled={loading}
-                style={{ padding: "10px 22px", borderRadius: "10px", border: "1.5px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "#e2e8f0", fontSize: "13px", fontWeight: 600, cursor: loading ? "wait" : "pointer", animation: loading ? "pulse 1.5s infinite" : "none" }}>
+                style={{ padding: "10px 22px", borderRadius: "10px", border: "1.5px solid rgba(202,164,97,0.3)", background: "rgba(255,255,255,0.05)", color: "#d5ae6b", fontSize: "13px", fontWeight: 600, cursor: loading ? "wait" : "pointer", animation: loading ? "pulse 1.5s infinite" : "none" }}>
                 {loading ? "Carregando..." : "↻ Atualizar Dados"}
               </button>
               <button onClick={function() { setModalProcesso(null); setModalOpen(true); }}
-                style={{ padding: "10px 22px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #0f766e, #14b8a6)", color: "#fff", fontSize: "13px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 15px rgba(20,184,166,0.3)" }}>
+                style={{ padding: "10px 22px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #caa461, #d5ae6b)", color: "#485158", fontSize: "13px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 15px rgba(202,164,97,0.3)" }}>
                 + Novo Processo
               </button>
             </div>
           </div>
           <div className="grid-stats" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
-            <StatCard label="Total Ativos" value={stats.total} color="#6366f1" />
+            <StatCard label="Total Ativos" value={stats.total} color="#caa461" />
             <StatCard label="Proc. Críticos" value={stats.critico} color="#ef4444" sub="+90 dias s/ movimentação" />
             <StatCard label="Proc. Atenção" value={stats.atencao} color="#f59e0b" sub="61-90 dias s/ movimentação" />
             <StatCard label="Clientes s/ Retorno" value={stats.semPosCliente} color="#f97316" sub="+30 dias s/ posicionamento" />
@@ -332,7 +335,7 @@ export default function App() {
         <div className="grid-filters" style={{ background: "#fff", borderRadius: "12px", padding: "14px 18px", display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
           <input value={search} onChange={function(e) { setSearch(e.target.value); }} placeholder="Buscar cliente, nº processo, vara..."
             style={{ flex: "1 1 200px", padding: "9px 14px", borderRadius: "8px", border: "1.5px solid #e2e8f0", fontSize: "13px", outline: "none" }}
-            onFocus={function(e) { e.target.style.borderColor="#14b8a6"; }} onBlur={function(e) { e.target.style.borderColor="#e2e8f0"; }} />
+            onFocus={function(e) { e.target.style.borderColor="#caa461"; }} onBlur={function(e) { e.target.style.borderColor="#e2e8f0"; }} />
           <select value={filterTipo} onChange={function(e) { setFilterTipo(e.target.value); }} style={selStyle}>
             <option>Todos</option>{TIPOS_ACAO.map(function(t) { return <option key={t}>{t}</option>; })}
           </select>
@@ -356,7 +359,7 @@ export default function App() {
           <div style={{ display: "flex", gap: "2px", background: "#f1f5f9", borderRadius: "8px", padding: "3px" }}>
             {["list", "cards"].map(function(v) {
               return (
-                <button key={v} onClick={function() { setView(v); }} style={{ padding: "5px 14px", borderRadius: "6px", border: "none", background: view === v ? "#fff" : "transparent", boxShadow: view === v ? "0 1px 3px rgba(0,0,0,0.08)" : "none", cursor: "pointer", fontSize: "12px", fontWeight: 700, color: view === v ? "#0f766e" : "#94a3b8" }}>
+                <button key={v} onClick={function() { setView(v); }} style={{ padding: "5px 14px", borderRadius: "6px", border: "none", background: view === v ? "#fff" : "transparent", boxShadow: view === v ? "0 1px 3px rgba(0,0,0,0.08)" : "none", cursor: "pointer", fontSize: "12px", fontWeight: 700, color: view === v ? "#caa461" : "#94a3b8" }}>
                   {v === "list" ? "Lista" : "Cards"}
                 </button>
               );
@@ -423,7 +426,7 @@ export default function App() {
                       </div>
                       <div style={{ display: "flex", gap: "8px", marginTop: "14px", justifyContent: "flex-end" }}>
                         <button onClick={function(e) { e.stopPropagation(); setModalProcesso(p); setModalOpen(true); }}
-                          style={{ padding: "7px 18px", borderRadius: "8px", border: "1.5px solid #e2e8f0", background: "#fff", fontSize: "12px", fontWeight: 600, cursor: "pointer", color: "#0f766e" }}>
+                          style={{ padding: "7px 18px", borderRadius: "8px", border: "1.5px solid #e2e8f0", background: "#fff", fontSize: "12px", fontWeight: 600, cursor: "pointer", color: "#caa461" }}>
                           Editar na Planilha &rarr;
                         </button>
                       </div>
@@ -458,7 +461,7 @@ export default function App() {
                   </div>
                   <div style={{ marginTop: "12px", textAlign: "right" }}>
                     <button onClick={function() { setModalProcesso(p); setModalOpen(true); }}
-                      style={{ padding: "6px 16px", borderRadius: "6px", border: "1.5px solid #e2e8f0", background: "#fff", fontSize: "11px", fontWeight: 600, cursor: "pointer", color: "#0f766e" }}>
+                      style={{ padding: "6px 16px", borderRadius: "6px", border: "1.5px solid #e2e8f0", background: "#fff", fontSize: "11px", fontWeight: 600, cursor: "pointer", color: "#caa461" }}>
                       Editar na Planilha &rarr;
                     </button>
                   </div>
