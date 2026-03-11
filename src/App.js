@@ -173,7 +173,7 @@ function LoginScreen({ onLogin }) {
       <div style={{ width: "420px", maxWidth: "100%", animation: "fadeIn 0.5s ease" }}>
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
           <div style={{ width: "64px", height: "64px", borderRadius: "16px", background: "linear-gradient(135deg, #0f766e, #14b8a6)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", boxShadow: "0 8px 30px rgba(20,184,166,0.3)" }}>
-            <span style={{ fontSize: "28px" }}>&#9878;</span>
+            <span style={{ fontSize: "28px", color: "#fff" }}>&#128274;</span>
           </div>
           <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "28px", fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>Controladoria Processual</h1>
           <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Acesso restrito ao escritório</p>
@@ -220,10 +220,6 @@ export default function App() {
   const [modalProcesso, setModalProcesso] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const [view, setView] = useState("list");
-
-  if (!autenticado) {
-    return <LoginScreen onLogin={function() { setAutenticado(true); }} />;
-  }
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -293,6 +289,10 @@ export default function App() {
   }, [enriched]);
 
   var selStyle = { padding: "8px 12px", borderRadius: "8px", border: "1.5px solid #e2e8f0", fontSize: "12px", background: "#fff", color: "#475569", outline: "none", cursor: "pointer" };
+
+  if (!autenticado) {
+    return <LoginScreen onLogin={function() { setAutenticado(true); }} />;
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#f4f5f7", fontFamily: "'Outfit', -apple-system, sans-serif" }}>
