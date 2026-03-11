@@ -289,6 +289,16 @@ export default function App() {
 
   var selStyle = { padding: "8px 12px", borderRadius: "8px", border: "1.5px solid #e2e8f0", fontSize: "12px", background: "#fff", color: "#475569", outline: "none", cursor: "pointer" };
 
+  var tiposUnicos = useMemo(function() {
+    var tipos = enriched.map(function(p) { return p.tipo; }).filter(function(t) { return t && t.trim(); });
+    return Array.from(new Set(tipos)).sort();
+  }, [enriched]);
+
+  var fasesUnicas = useMemo(function() {
+    var fases = enriched.map(function(p) { return p.fase; }).filter(function(f) { return f && f.trim(); });
+    return Array.from(new Set(fases)).sort();
+  }, [enriched]);
+
   if (!autenticado) {
     return <LoginScreen onLogin={function() { setAutenticado(true); }} />;
   }
@@ -332,38 +342,59 @@ export default function App() {
       </div>
 
       <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "16px 28px 0" }}>
-        <div className="grid-filters" style={{ background: "#fff", borderRadius: "12px", padding: "14px 18px", display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
-          <input value={search} onChange={function(e) { setSearch(e.target.value); }} placeholder="Buscar cliente, nº processo, vara..."
-            style={{ flex: "1 1 200px", padding: "9px 14px", borderRadius: "8px", border: "1.5px solid #e2e8f0", fontSize: "13px", outline: "none" }}
-            onFocus={function(e) { e.target.style.borderColor="#caa461"; }} onBlur={function(e) { e.target.style.borderColor="#e2e8f0"; }} />
-          <select value={filterTipo} onChange={function(e) { setFilterTipo(e.target.value); }} style={selStyle}>
-            <option>Todos</option>{TIPOS_ACAO.map(function(t) { return <option key={t}>{t}</option>; })}
-          </select>
-          <select value={filterFase} onChange={function(e) { setFilterFase(e.target.value); }} style={selStyle}>
-            <option>Todas</option>{FASES.map(function(f) { return <option key={f}>{f}</option>; })}
-          </select>
-          <select value={filterAlerta} onChange={function(e) { setFilterAlerta(e.target.value); }} style={selStyle}>
-            <option value="Todos">&Delta; Processo</option>
-            <option>CRÍTICO</option><option>ATENÇÃO</option><option>MONITORAR</option><option>OK</option>
-          </select>
-          <select value={filterAlertaCliente} onChange={function(e) { setFilterAlertaCliente(e.target.value); }} style={selStyle}>
-            <option value="Todos">&Delta; Cliente</option>
-            <option>URGENTE</option><option>ATRASO</option><option>PENDENTE</option><option>EM DIA</option>
-          </select>
-          <select value={sortBy} onChange={function(e) { setSortBy(e.target.value); }} style={selStyle}>
-            <option value="diasProc">Ordenar: &Delta; Processo</option>
-            <option value="diasCliente">Ordenar: &Delta; Cliente</option>
-            <option value="cliente">Ordenar: Cliente A-Z</option>
-            <option value="alerta">Ordenar: Prioridade</option>
-          </select>
-          <div style={{ display: "flex", gap: "2px", background: "#f1f5f9", borderRadius: "8px", padding: "3px" }}>
-            {["list", "cards"].map(function(v) {
-              return (
-                <button key={v} onClick={function() { setView(v); }} style={{ padding: "5px 14px", borderRadius: "6px", border: "none", background: view === v ? "#fff" : "transparent", boxShadow: view === v ? "0 1px 3px rgba(0,0,0,0.08)" : "none", cursor: "pointer", fontSize: "12px", fontWeight: 700, color: view === v ? "#caa461" : "#94a3b8" }}>
-                  {v === "list" ? "Lista" : "Cards"}
-                </button>
-              );
-            })}
+        <div className="grid-filters" style={{ background: "#fff", borderRadius: "12px", padding: "14px 18px", display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-end", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
+          <div style={{ flex: "1 1 200px" }}>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Busca</label>
+            <input value={search} onChange={function(e) { setSearch(e.target.value); }} placeholder="Cliente, nº processo, vara..."
+              style={{ width: "100%", padding: "9px 14px", borderRadius: "8px", border: "1.5px solid #e2e8f0", fontSize: "13px", outline: "none", boxSizing: "border-box" }}
+              onFocus={function(e) { e.target.style.borderColor="#caa461"; }} onBlur={function(e) { e.target.style.borderColor="#e2e8f0"; }} />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Tipo de Ação</label>
+            <select value={filterTipo} onChange={function(e) { setFilterTipo(e.target.value); }} style={selStyle}>
+              <option>Todos</option>{tiposUnicos.map(function(t) { return <option key={t}>{t}</option>; })}
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Fase Processual</label>
+            <select value={filterFase} onChange={function(e) { setFilterFase(e.target.value); }} style={selStyle}>
+              <option>Todas</option>{fasesUnicas.map(function(f) { return <option key={f}>{f}</option>; })}
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>&Delta; Processo</label>
+            <select value={filterAlerta} onChange={function(e) { setFilterAlerta(e.target.value); }} style={selStyle}>
+              <option value="Todos">Todos</option>
+              <option>CRÍTICO</option><option>ATENÇÃO</option><option>MONITORAR</option><option>OK</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>&Delta; Cliente</label>
+            <select value={filterAlertaCliente} onChange={function(e) { setFilterAlertaCliente(e.target.value); }} style={selStyle}>
+              <option value="Todos">Todos</option>
+              <option>URGENTE</option><option>ATRASO</option><option>PENDENTE</option><option>EM DIA</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Ordenar</label>
+            <select value={sortBy} onChange={function(e) { setSortBy(e.target.value); }} style={selStyle}>
+              <option value="diasProc">&Delta; Processo</option>
+              <option value="diasCliente">&Delta; Cliente</option>
+              <option value="cliente">Cliente A-Z</option>
+              <option value="alerta">Prioridade</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Visualização</label>
+            <div style={{ display: "flex", gap: "2px", background: "#f1f5f9", borderRadius: "8px", padding: "3px" }}>
+              {["list", "cards"].map(function(v) {
+                return (
+                  <button key={v} onClick={function() { setView(v); }} style={{ padding: "5px 14px", borderRadius: "6px", border: "none", background: view === v ? "#fff" : "transparent", boxShadow: view === v ? "0 1px 3px rgba(0,0,0,0.08)" : "none", cursor: "pointer", fontSize: "12px", fontWeight: 700, color: view === v ? "#caa461" : "#94a3b8" }}>
+                    {v === "list" ? "Lista" : "Cards"}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
