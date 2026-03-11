@@ -303,7 +303,7 @@ export default function App() {
         <div style={{ maxWidth: "1300px", margin: "0 auto", position: "relative" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-              <img src={process.env.PUBLIC_URL + "/LOGOTIPO%20APROVADO%20(11).png"} alt="Losacco" style={{ height: "40px" }} />
+              <img src={process.env.PUBLIC_URL + "/LOGOTIPO%20APROVADO%20(11).png"} alt="Losacco" style={{ height: "80px" }} />
               <div>
                 <h1 style={{ fontSize: "20px", fontWeight: 700, color: "#fff", margin: "0 0 2px", letterSpacing: "-0.3px" }}>Controladoria Processual</h1>
                 <p style={{ fontSize: "12px", color: "#d5ae6b", margin: 0 }}>
