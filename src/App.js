@@ -215,6 +215,7 @@ export default function App() {
   const [filterAlerta, setFilterAlerta] = useState("Todos");
   const [filterAlertaCliente, setFilterAlertaCliente] = useState("Todos");
   const [filterResponsavel, setFilterResponsavel] = useState("Todos");
+  const [filterAvaliacao, setFilterAvaliacao] = useState("Todos");
   const [sortBy, setSortBy] = useState("diasProc");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalProcesso, setModalProcesso] = useState(null);
@@ -278,7 +279,14 @@ export default function App() {
       var matchAlerta = filterAlerta === "Todos" || p.alertaProc.label === filterAlerta;
       var matchAlertaCli = filterAlertaCliente === "Todos" || p.alertaCliente.label === filterAlertaCliente;
       var matchResp = filterResponsavel === "Todos" || p.responsavel === filterResponsavel;
-      return matchSearch && matchTipo && matchFase && matchAlerta && matchAlertaCli && matchResp;
+      var matchAval = filterAvaliacao === "Todos" || (function() {
+        var av = (p.avaliacao || "").toLowerCase().trim();
+        if (filterAvaliacao === "Pendente") return !av;
+        if (filterAvaliacao === "Solicitada") return av === "solicitada";
+        if (filterAvaliacao === "Recebida") return av === "recebida";
+        return true;
+      })();
+      return matchSearch && matchTipo && matchFase && matchAlerta && matchAlertaCli && matchResp && matchAval;
     });
     if (secao === "avaliacoes") {
       result.sort(function(a, b) {
@@ -290,7 +298,7 @@ export default function App() {
     else if (sortBy === "cliente") result.sort(function(a, b) { return (a.cliente || "").localeCompare(b.cliente || ""); });
     else if (sortBy === "alerta") result.sort(function(a, b) { return a.alertaProc.priority - b.alertaProc.priority; });
     return result;
-  }, [enriched, search, filterTipo, filterFase, filterAlerta, filterAlertaCliente, filterResponsavel, sortBy, secao]);
+  }, [enriched, search, filterTipo, filterFase, filterAlerta, filterAlertaCliente, filterResponsavel, filterAvaliacao, sortBy, secao]);
 
   var ativos = useMemo(function() { return enriched.filter(function(p) { return !p.encerrado; }); }, [enriched]);
   var encerrados = useMemo(function() { return enriched.filter(function(p) { return p.encerrado; }); }, [enriched]);
@@ -408,6 +416,17 @@ export default function App() {
               <option>Todas</option>{fasesUnicas.map(function(f) { return <option key={f}>{f}</option>; })}
             </select>
           </div>
+          {secao === "avaliacoes" && (
+          <div>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Avaliação</label>
+            <select value={filterAvaliacao} onChange={function(e) { setFilterAvaliacao(e.target.value); }} style={selStyle}>
+              <option>Todos</option>
+              <option>Pendente</option>
+              <option>Solicitada</option>
+              <option>Recebida</option>
+            </select>
+          </div>
+          )}
           <div>
             <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>&Delta; Processo</label>
             <select value={filterAlerta} onChange={function(e) { setFilterAlerta(e.target.value); }} style={selStyle}>
