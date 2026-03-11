@@ -214,6 +214,7 @@ export default function App() {
   const [filterFase, setFilterFase] = useState("Todas");
   const [filterAlerta, setFilterAlerta] = useState("Todos");
   const [filterAlertaCliente, setFilterAlertaCliente] = useState("Todos");
+  const [filterResponsavel, setFilterResponsavel] = useState("Todos");
   const [sortBy, setSortBy] = useState("diasProc");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalProcesso, setModalProcesso] = useState(null);
@@ -264,19 +265,20 @@ export default function App() {
   const filtered = useMemo(() => {
     var result = enriched.filter(function(p) {
       var s = search.toLowerCase();
-      var matchSearch = !search || [p.numero, p.cliente, p.parteContraria, p.vara, p.situacao].some(function(f) { return f && f.toLowerCase().includes(s); });
+      var matchSearch = !search || [p.numero, p.cliente, p.parteContraria, p.responsavel, p.situacao].some(function(f) { return f && f.toLowerCase().includes(s); });
       var matchTipo = filterTipo === "Todos" || p.tipo === filterTipo;
       var matchFase = filterFase === "Todas" || p.fase === filterFase;
       var matchAlerta = filterAlerta === "Todos" || p.alertaProc.label === filterAlerta;
       var matchAlertaCli = filterAlertaCliente === "Todos" || p.alertaCliente.label === filterAlertaCliente;
-      return matchSearch && matchTipo && matchFase && matchAlerta && matchAlertaCli;
+      var matchResp = filterResponsavel === "Todos" || p.responsavel === filterResponsavel;
+      return matchSearch && matchTipo && matchFase && matchAlerta && matchAlertaCli && matchResp;
     });
     if (sortBy === "diasProc") result.sort(function(a, b) { return (b.diasProc === null ? -1 : b.diasProc) - (a.diasProc === null ? -1 : a.diasProc); });
     else if (sortBy === "diasCliente") result.sort(function(a, b) { return (b.diasCliente === null ? -1 : b.diasCliente) - (a.diasCliente === null ? -1 : a.diasCliente); });
     else if (sortBy === "cliente") result.sort(function(a, b) { return (a.cliente || "").localeCompare(b.cliente || ""); });
     else if (sortBy === "alerta") result.sort(function(a, b) { return a.alertaProc.priority - b.alertaProc.priority; });
     return result;
-  }, [enriched, search, filterTipo, filterFase, filterAlerta, filterAlertaCliente, sortBy]);
+  }, [enriched, search, filterTipo, filterFase, filterAlerta, filterAlertaCliente, filterResponsavel, sortBy]);
 
   const stats = useMemo(function() {
     return {
@@ -297,6 +299,11 @@ export default function App() {
   var fasesUnicas = useMemo(function() {
     var fases = enriched.map(function(p) { return p.fase; }).filter(function(f) { return f && f.trim(); });
     return Array.from(new Set(fases)).sort();
+  }, [enriched]);
+
+  var responsaveisUnicos = useMemo(function() {
+    var resps = enriched.map(function(p) { return p.responsavel; }).filter(function(r) { return r && r.trim(); });
+    return Array.from(new Set(resps)).sort();
   }, [enriched]);
 
   if (!autenticado) {
@@ -345,7 +352,7 @@ export default function App() {
         <div className="grid-filters" style={{ background: "#fff", borderRadius: "12px", padding: "14px 18px", display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-end", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
           <div style={{ flex: "1 1 200px" }}>
             <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Busca</label>
-            <input value={search} onChange={function(e) { setSearch(e.target.value); }} placeholder="Cliente, nº processo, vara..."
+            <input value={search} onChange={function(e) { setSearch(e.target.value); }} placeholder="Cliente, nº processo, responsável..."
               style={{ width: "100%", padding: "9px 14px", borderRadius: "8px", border: "1.5px solid #e2e8f0", fontSize: "13px", outline: "none", boxSizing: "border-box" }}
               onFocus={function(e) { e.target.style.borderColor="#caa461"; }} onBlur={function(e) { e.target.style.borderColor="#e2e8f0"; }} />
           </div>
@@ -353,6 +360,12 @@ export default function App() {
             <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Tipo de Ação</label>
             <select value={filterTipo} onChange={function(e) { setFilterTipo(e.target.value); }} style={selStyle}>
               <option>Todos</option>{tiposUnicos.map(function(t) { return <option key={t}>{t}</option>; })}
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Responsável</label>
+            <select value={filterResponsavel} onChange={function(e) { setFilterResponsavel(e.target.value); }} style={selStyle}>
+              <option>Todos</option>{responsaveisUnicos.map(function(r) { return <option key={r}>{r}</option>; })}
             </select>
           </div>
           <div>
@@ -429,7 +442,7 @@ export default function App() {
                         {p.cliente || "—"} <span style={{ fontWeight: 400, color: "#cbd5e1", margin: "0 2px" }}>&times;</span> <span style={{ fontWeight: 500, color: "#64748b" }}>{p.parteContraria || "—"}</span>
                       </div>
                       <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-                        {p.numero} &middot; {p.vara} &middot; <span style={{ color: "#64748b", fontWeight: 500 }}>{p.tipo}</span> &middot; <span style={{ background: "#f1f5f9", padding: "1px 7px", borderRadius: "4px", fontWeight: 600, color: "#475569" }}>{p.fase}</span>
+                        {p.numero} &middot; <span style={{ color: "#caa461", fontWeight: 600 }}>{p.responsavel}</span> &middot; <span style={{ color: "#64748b", fontWeight: 500 }}>{p.tipo}</span> &middot; <span style={{ background: "#f1f5f9", padding: "1px 7px", borderRadius: "4px", fontWeight: 600, color: "#475569" }}>{p.fase}</span>
                       </div>
                     </div>
                     <div style={{ fontSize: "12px", color: "#94a3b8", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.situacao}</div>
