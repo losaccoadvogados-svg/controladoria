@@ -150,7 +150,62 @@ function StatCard({ label, value, color, sub }) {
   );
 }
 
+function LoginScreen({ onLogin }) {
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState(false);
+  const [shaking, setShaking] = useState(false);
+
+  var handleSubmit = function(e) {
+    e.preventDefault();
+    if (senha === "@Losacco_108") {
+      onLogin();
+    } else {
+      setErro(true);
+      setShaking(true);
+      setTimeout(function() { setShaking(false); }, 500);
+    }
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)", fontFamily: "'Outfit', -apple-system, sans-serif", padding: "20px" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+      <style>{"\n        @keyframes shake { 0%,100% { transform:translateX(0); } 20%,60% { transform:translateX(-8px); } 40%,80% { transform:translateX(8px); } }\n        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }\n      "}</style>
+      <div style={{ width: "420px", maxWidth: "100%", animation: "fadeIn 0.5s ease" }}>
+        <div style={{ textAlign: "center", marginBottom: "36px" }}>
+          <div style={{ width: "64px", height: "64px", borderRadius: "16px", background: "linear-gradient(135deg, #0f766e, #14b8a6)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", boxShadow: "0 8px 30px rgba(20,184,166,0.3)" }}>
+            <span style={{ fontSize: "28px" }}>&#9878;</span>
+          </div>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "28px", fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>Controladoria Processual</h1>
+          <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Acesso restrito ao escritório</p>
+        </div>
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "32px 28px", backdropFilter: "blur(10px)", animation: shaking ? "shake 0.5s ease" : "none" }}>
+          <div style={{ marginBottom: "20px" }}>
+            <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>Senha de acesso</label>
+            <input
+              type="password"
+              value={senha}
+              onChange={function(e) { setSenha(e.target.value); setErro(false); }}
+              onKeyDown={function(e) { if (e.key === "Enter") handleSubmit(e); }}
+              placeholder="Digite a senha"
+              style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: erro ? "2px solid #ef4444" : "1.5px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.05)", color: "#fff", fontSize: "15px", outline: "none", boxSizing: "border-box", transition: "border 0.2s" }}
+            />
+            {erro && <p style={{ color: "#ef4444", fontSize: "13px", margin: "8px 0 0", fontWeight: 500 }}>Senha incorreta. Tente novamente.</p>}
+          </div>
+          <button onClick={handleSubmit}
+            style={{ width: "100%", padding: "14px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #0f766e, #14b8a6)", color: "#fff", fontSize: "15px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 15px rgba(20,184,166,0.3)", transition: "transform 0.15s" }}
+            onMouseOver={function(e) { e.currentTarget.style.transform="translateY(-1px)"; }}
+            onMouseOut={function(e) { e.currentTarget.style.transform="translateY(0)"; }}>
+            Entrar
+          </button>
+        </div>
+        <p style={{ textAlign: "center", fontSize: "12px", color: "#475569", marginTop: "20px" }}>Direito de Família · Acesso protegido</p>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
+  const [autenticado, setAutenticado] = useState(false);
   const [processos, setProcessos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -165,6 +220,10 @@ export default function App() {
   const [modalProcesso, setModalProcesso] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const [view, setView] = useState("list");
+
+  if (!autenticado) {
+    return <LoginScreen onLogin={function() { setAutenticado(true); }} />;
+  }
 
   const fetchData = useCallback(async () => {
     setLoading(true);
