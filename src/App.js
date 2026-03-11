@@ -265,7 +265,7 @@ export default function App() {
   const filtered = useMemo(() => {
     var result = enriched.filter(function(p) {
       var s = search.toLowerCase();
-      var matchSearch = !search || [p.numero, p.cliente, p.parteContraria, p.responsavel, p.situacao].some(function(f) { return f && f.toLowerCase().includes(s); });
+      var matchSearch = !search || [p.id, p.numero, p.cliente, p.parteContraria, p.responsavel, p.situacao].some(function(f) { return f && f.toLowerCase().includes(s); });
       var matchTipo = filterTipo === "Todos" || p.tipo === filterTipo;
       var matchFase = filterFase === "Todas" || p.fase === filterFase;
       var matchAlerta = filterAlerta === "Todos" || p.alertaProc.label === filterAlerta;
@@ -442,7 +442,7 @@ export default function App() {
                         {p.cliente || "—"} <span style={{ fontWeight: 400, color: "#cbd5e1", margin: "0 2px" }}>&times;</span> <span style={{ fontWeight: 500, color: "#64748b" }}>{p.parteContraria || "—"}</span>
                       </div>
                       <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-                        {p.numero} &middot; <span style={{ color: "#caa461", fontWeight: 600 }}>{p.responsavel}</span> &middot; <span style={{ color: "#64748b", fontWeight: 500 }}>{p.tipo}</span> &middot; <span style={{ background: "#f1f5f9", padding: "1px 7px", borderRadius: "4px", fontWeight: 600, color: "#475569" }}>{p.fase}</span>
+                        {p.id ? <span style={{ background: "#f5f0e6", padding: "1px 7px", borderRadius: "4px", fontWeight: 500, color: "#caa461" }}>{p.id}</span> : null}{p.id ? " \u00b7 " : ""}{p.numero} &middot; <span style={{ color: "#caa461", fontWeight: 600 }}>{p.responsavel}</span> &middot; <span style={{ color: "#64748b", fontWeight: 500 }}>{p.tipo}</span> &middot; <span style={{ background: "#f1f5f9", padding: "1px 7px", borderRadius: "4px", fontWeight: 600, color: "#475569" }}>{p.fase}</span>
                       </div>
                     </div>
                     <div style={{ fontSize: "12px", color: "#94a3b8", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.situacao}</div>
