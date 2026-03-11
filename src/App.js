@@ -61,15 +61,15 @@ function diasDesde(dateStr) {
 }
 
 function getAlerta(dias) {
-  if (dias === null) return { label: "\u2014", bg: "#f8fafc", text: "#94a3b8", border: "#e2e8f0", priority: 4 };
-  if (dias > 90) return { label: "CR\u00cdTICO", bg: "#fef2f2", text: "#991b1b", border: "#fca5a5", priority: 0 };
-  if (dias > 60) return { label: "ATEN\u00c7\u00c3O", bg: "#fffbeb", text: "#92400e", border: "#fcd34d", priority: 1 };
+  if (dias === null) return { label: "—", bg: "#f8fafc", text: "#94a3b8", border: "#e2e8f0", priority: 4 };
+  if (dias > 90) return { label: "CRÍTICO", bg: "#fef2f2", text: "#991b1b", border: "#fca5a5", priority: 0 };
+  if (dias > 60) return { label: "ATENÇÃO", bg: "#fffbeb", text: "#92400e", border: "#fcd34d", priority: 1 };
   if (dias > 30) return { label: "MONITORAR", bg: "#eff6ff", text: "#1e40af", border: "#93c5fd", priority: 2 };
   return { label: "OK", bg: "#f0fdf4", text: "#166534", border: "#86efac", priority: 3 };
 }
 
 function getAlertaCliente(dias) {
-  if (dias === null) return { label: "\u2014", bg: "#f8fafc", text: "#94a3b8", border: "#e2e8f0" };
+  if (dias === null) return { label: "—", bg: "#f8fafc", text: "#94a3b8", border: "#e2e8f0" };
   if (dias > 60) return { label: "URGENTE", bg: "#fef2f2", text: "#991b1b", border: "#fca5a5" };
   if (dias > 30) return { label: "ATRASO", bg: "#fffbeb", text: "#92400e", border: "#fcd34d" };
   if (dias > 15) return { label: "PENDENTE", bg: "#eff6ff", text: "#1e40af", border: "#93c5fd" };
@@ -77,7 +77,7 @@ function getAlertaCliente(dias) {
 }
 
 function formatDate(dateStr) {
-  if (!dateStr) return "\u2014";
+  if (!dateStr) return "—";
   if (dateStr.includes("/")) return dateStr;
   const [y, m, d] = dateStr.split("-");
   return d + "/" + m + "/" + y;
@@ -99,7 +99,7 @@ function DeltaDisplay({ dias, label, alerta }) {
   return (
     <div style={{ textAlign: "center", minWidth: "80px" }}>
       <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "2px" }}>{label}</div>
-      <div style={{ fontSize: "22px", fontWeight: 800, color: color, lineHeight: 1.1, fontFamily: "'Outfit', sans-serif" }}>{dias !== null ? dias : "\u2014"}</div>
+      <div style={{ fontSize: "22px", fontWeight: 800, color: color, lineHeight: 1.1, fontFamily: "'Outfit', sans-serif" }}>{dias !== null ? dias : "—"}</div>
       <div style={{ fontSize: "9px", color: "#94a3b8", marginBottom: "3px" }}>dias</div>
       <Badge alerta={alerta} small />
     </div>
@@ -119,12 +119,12 @@ function Modal({ isOpen, onClose, processo, sheetId }) {
         <div style={{ padding: "24px 28px" }}>
           <p style={{ fontSize: "14px", color: "#475569", lineHeight: 1.7, margin: "0 0 8px" }}>
             {processo
-              ? 'Para editar o processo de "' + processo.cliente + '", abra a planilha e v\u00e1 at\u00e9 a linha ' + processo._rowIndex + '.'
+              ? 'Para editar o processo de "' + processo.cliente + '", abra a planilha e vá até a linha ' + processo._rowIndex + '.'
               : "Para adicionar um novo processo, insira uma nova linha na planilha do Google Sheets."
             }
           </p>
           <p style={{ fontSize: "13px", color: "#94a3b8", margin: "0 0 20px" }}>
-            Ap\u00f3s salvar na planilha, clique em "Atualizar Dados" no app para ver as altera\u00e7\u00f5es.
+            Após salvar na planilha, clique em "Atualizar Dados" no app para ver as alterações.
           </p>
           <a href={"https://docs.google.com/spreadsheets/d/" + sheetId + "/edit"} target="_blank" rel="noopener noreferrer"
             style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "12px 24px", borderRadius: "10px", background: "linear-gradient(135deg, #0f766e, #14b8a6)", color: "#fff", fontSize: "14px", fontWeight: 700, textDecoration: "none", boxShadow: "0 4px 15px rgba(20,184,166,0.3)" }}>
@@ -188,7 +188,7 @@ export default function App() {
           }
         } catch(e) { continue; }
       }
-      if (!text) throw new Error("N\u00e3o foi poss\u00edvel conectar \u00e0 planilha");
+      if (!text) throw new Error("Não foi possível conectar à planilha");
       const data = parseCSV(text);
       setProcessos(data);
       setLastUpdate(new Date());
@@ -227,8 +227,8 @@ export default function App() {
   const stats = useMemo(function() {
     return {
       total: enriched.length,
-      critico: enriched.filter(function(p) { return p.alertaProc.label === "CR\u00cdTICO"; }).length,
-      atencao: enriched.filter(function(p) { return p.alertaProc.label === "ATEN\u00c7\u00c3O"; }).length,
+      critico: enriched.filter(function(p) { return p.alertaProc.label === "CRÍTICO"; }).length,
+      atencao: enriched.filter(function(p) { return p.alertaProc.label === "ATENÇÃO"; }).length,
       semPosCliente: enriched.filter(function(p) { return p.alertaCliente.label === "URGENTE" || p.alertaCliente.label === "ATRASO"; }).length,
     };
   }, [enriched]);
@@ -246,13 +246,13 @@ export default function App() {
             <div>
               <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "26px", fontWeight: 800, color: "#fff", margin: "0 0 4px", letterSpacing: "-0.5px" }}>Controladoria Processual</h1>
               <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>
-                Direito de Fam\u00edlia {lastUpdate ? " \u00b7 Atualizado \u00e0s " + lastUpdate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : " \u00b7 Carregando..."}
+                Direito de Família {lastUpdate ? " · Atualizado às " + lastUpdate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : " · Carregando..."}
               </p>
             </div>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
               <button onClick={fetchData} disabled={loading}
                 style={{ padding: "10px 22px", borderRadius: "10px", border: "1.5px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "#e2e8f0", fontSize: "13px", fontWeight: 600, cursor: loading ? "wait" : "pointer", animation: loading ? "pulse 1.5s infinite" : "none" }}>
-                {loading ? "Carregando..." : "\u21bb Atualizar Dados"}
+                {loading ? "Carregando..." : "↻ Atualizar Dados"}
               </button>
               <button onClick={function() { setModalProcesso(null); setModalOpen(true); }}
                 style={{ padding: "10px 22px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #0f766e, #14b8a6)", color: "#fff", fontSize: "13px", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 15px rgba(20,184,166,0.3)" }}>
@@ -262,8 +262,8 @@ export default function App() {
           </div>
           <div className="grid-stats" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
             <StatCard label="Total Ativos" value={stats.total} color="#6366f1" />
-            <StatCard label="Proc. Cr\u00edticos" value={stats.critico} color="#ef4444" sub="+90 dias s/ movimenta\u00e7\u00e3o" />
-            <StatCard label="Proc. Aten\u00e7\u00e3o" value={stats.atencao} color="#f59e0b" sub="61-90 dias s/ movimenta\u00e7\u00e3o" />
+            <StatCard label="Proc. Críticos" value={stats.critico} color="#ef4444" sub="+90 dias s/ movimentação" />
+            <StatCard label="Proc. Atenção" value={stats.atencao} color="#f59e0b" sub="61-90 dias s/ movimentação" />
             <StatCard label="Clientes s/ Retorno" value={stats.semPosCliente} color="#f97316" sub="+30 dias s/ posicionamento" />
           </div>
         </div>
@@ -271,7 +271,7 @@ export default function App() {
 
       <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "16px 28px 0" }}>
         <div className="grid-filters" style={{ background: "#fff", borderRadius: "12px", padding: "14px 18px", display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
-          <input value={search} onChange={function(e) { setSearch(e.target.value); }} placeholder="Buscar cliente, n\u00ba processo, vara..."
+          <input value={search} onChange={function(e) { setSearch(e.target.value); }} placeholder="Buscar cliente, nº processo, vara..."
             style={{ flex: "1 1 200px", padding: "9px 14px", borderRadius: "8px", border: "1.5px solid #e2e8f0", fontSize: "13px", outline: "none" }}
             onFocus={function(e) { e.target.style.borderColor="#14b8a6"; }} onBlur={function(e) { e.target.style.borderColor="#e2e8f0"; }} />
           <select value={filterTipo} onChange={function(e) { setFilterTipo(e.target.value); }} style={selStyle}>
@@ -282,7 +282,7 @@ export default function App() {
           </select>
           <select value={filterAlerta} onChange={function(e) { setFilterAlerta(e.target.value); }} style={selStyle}>
             <option value="Todos">&Delta; Processo</option>
-            <option>CR\u00cdTICO</option><option>ATEN\u00c7\u00c3O</option><option>MONITORAR</option><option>OK</option>
+            <option>CRÍTICO</option><option>ATENÇÃO</option><option>MONITORAR</option><option>OK</option>
           </select>
           <select value={filterAlertaCliente} onChange={function(e) { setFilterAlertaCliente(e.target.value); }} style={selStyle}>
             <option value="Todos">&Delta; Cliente</option>
@@ -309,7 +309,7 @@ export default function App() {
       {error && (
         <div style={{ maxWidth: "1300px", margin: "16px auto 0", padding: "0 28px" }}>
           <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "10px", padding: "14px 18px", fontSize: "13px", color: "#991b1b" }}>
-            Erro ao carregar: {error}. Verifique se a planilha est\u00e1 publicada na web.
+            Erro ao carregar: {error}. Verifique se a planilha está publicada na web.
             <button onClick={fetchData} style={{ marginLeft: "12px", padding: "4px 14px", borderRadius: "6px", border: "1px solid #fca5a5", background: "#fff", cursor: "pointer", fontSize: "12px", fontWeight: 600, color: "#991b1b" }}>Tentar novamente</button>
           </div>
         </div>
@@ -333,33 +333,33 @@ export default function App() {
                   <div onClick={function() { setExpandedId(expandedId === p.id ? null : p.id); }} style={{ padding: "14px 18px", cursor: "pointer", display: "grid", gridTemplateColumns: "1.5fr auto 80px 80px", gap: "14px", alignItems: "center" }}>
                     <div>
                       <div style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", marginBottom: "2px" }}>
-                        {p.cliente || "\u2014"} <span style={{ fontWeight: 400, color: "#cbd5e1", margin: "0 2px" }}>&times;</span> <span style={{ fontWeight: 500, color: "#64748b" }}>{p.parteContraria || "\u2014"}</span>
+                        {p.cliente || "—"} <span style={{ fontWeight: 400, color: "#cbd5e1", margin: "0 2px" }}>&times;</span> <span style={{ fontWeight: 500, color: "#64748b" }}>{p.parteContraria || "—"}</span>
                       </div>
                       <div style={{ fontSize: "11px", color: "#94a3b8" }}>
                         {p.numero} &middot; {p.vara} &middot; <span style={{ color: "#64748b", fontWeight: 500 }}>{p.tipo}</span> &middot; <span style={{ background: "#f1f5f9", padding: "1px 7px", borderRadius: "4px", fontWeight: 600, color: "#475569" }}>{p.fase}</span>
                       </div>
                     </div>
                     <div style={{ fontSize: "12px", color: "#94a3b8", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.situacao}</div>
-                    <DeltaDisplay dias={p.diasProc} label={"\u0394 Processo"} alerta={p.alertaProc} />
-                    <DeltaDisplay dias={p.diasCliente} label={"\u0394 Cliente"} alerta={p.alertaCliente} />
+                    <DeltaDisplay dias={p.diasProc} label={"Δ Processo"} alerta={p.alertaProc} />
+                    <DeltaDisplay dias={p.diasCliente} label={"Δ Cliente"} alerta={p.alertaCliente} />
                   </div>
 
                   {expandedId === p.id && (
                     <div style={{ padding: "0 18px 18px", borderTop: "1px solid #f8fafc", animation: "fadeUp 0.2s ease" }}>
                       <div className="expanded-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginTop: "14px" }}>
                         <div>
-                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "5px" }}>Situa\u00e7\u00e3o Atual</div>
-                          <div style={{ fontSize: "13px", color: "#334155", lineHeight: 1.6 }}>{p.situacao || "\u2014"}</div>
+                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "5px" }}>Situação Atual</div>
+                          <div style={{ fontSize: "13px", color: "#334155", lineHeight: 1.6 }}>{p.situacao || "—"}</div>
                         </div>
                         <div>
-                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "5px" }}>\u00daltima Movimenta\u00e7\u00e3o</div>
-                          <div style={{ fontSize: "13px", color: "#334155", lineHeight: 1.6 }}>{p.ultimaMovimentacao || "\u2014"}</div>
-                          <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "4px" }}>{"\ud83d\udcc5 " + formatDate(p.dataMovimentacao)}</div>
+                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "5px" }}>Última Movimentação</div>
+                          <div style={{ fontSize: "13px", color: "#334155", lineHeight: 1.6 }}>{p.ultimaMovimentacao || "—"}</div>
+                          <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "4px" }}>{"📅 " + formatDate(p.dataMovimentacao)}</div>
                         </div>
                         <div>
-                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "5px" }}>\u00daltimo Posicionamento ao Cliente</div>
-                          <div style={{ fontSize: "13px", color: "#334155", lineHeight: 1.6 }}>{p.ultimoPosicionamento || "\u2014"}</div>
-                          <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "4px" }}>{"\ud83d\udcc5 " + formatDate(p.dataPosicionamento)}</div>
+                          <div style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "5px" }}>Último Posicionamento ao Cliente</div>
+                          <div style={{ fontSize: "13px", color: "#334155", lineHeight: 1.6 }}>{p.ultimoPosicionamento || "—"}</div>
+                          <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "4px" }}>{"📅 " + formatDate(p.dataPosicionamento)}</div>
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: "8px", marginTop: "14px", justifyContent: "flex-end" }}>
@@ -381,8 +381,8 @@ export default function App() {
                 <div key={p.id + "-" + idx} className="card-hover" style={{ background: "#fff", borderRadius: "14px", padding: "18px", border: "1px solid #f1f5f9", animation: "fadeUp 0.3s ease " + Math.min(idx * 0.04, 0.5) + "s both" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
                     <div>
-                      <div style={{ fontSize: "15px", fontWeight: 700, color: "#0f172a" }}>{p.cliente || "\u2014"}</div>
-                      <div style={{ fontSize: "11px", color: "#94a3b8" }}>vs {p.parteContraria || "\u2014"}</div>
+                      <div style={{ fontSize: "15px", fontWeight: 700, color: "#0f172a" }}>{p.cliente || "—"}</div>
+                      <div style={{ fontSize: "11px", color: "#94a3b8" }}>vs {p.parteContraria || "—"}</div>
                     </div>
                     <Badge alerta={p.alertaProc} />
                   </div>
@@ -391,11 +391,11 @@ export default function App() {
                     <span style={{ background: "#f1f5f9", padding: "3px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 600, color: "#475569" }}>{p.tipo}</span>
                     <span style={{ background: "#f0fdf4", padding: "3px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 600, color: "#166534" }}>{p.fase}</span>
                   </div>
-                  <div style={{ fontSize: "12px", color: "#475569", lineHeight: 1.5, marginBottom: "12px", minHeight: "36px" }}>{p.situacao || "\u2014"}</div>
+                  <div style={{ fontSize: "12px", color: "#475569", lineHeight: 1.5, marginBottom: "12px", minHeight: "36px" }}>{p.situacao || "—"}</div>
                   <div style={{ display: "flex", justifyContent: "space-around", borderTop: "1px solid #f1f5f9", paddingTop: "14px" }}>
-                    <DeltaDisplay dias={p.diasProc} label={"\u0394 Processo"} alerta={p.alertaProc} />
+                    <DeltaDisplay dias={p.diasProc} label={"Δ Processo"} alerta={p.alertaProc} />
                     <div style={{ width: "1px", background: "#f1f5f9" }} />
-                    <DeltaDisplay dias={p.diasCliente} label={"\u0394 Cliente"} alerta={p.alertaCliente} />
+                    <DeltaDisplay dias={p.diasCliente} label={"Δ Cliente"} alerta={p.alertaCliente} />
                   </div>
                   <div style={{ marginTop: "12px", textAlign: "right" }}>
                     <button onClick={function() { setModalProcesso(p); setModalOpen(true); }}
