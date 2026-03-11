@@ -270,6 +270,7 @@ export default function App() {
     var result = enriched.filter(function(p) {
       if (secao === "ativos" && p.encerrado) return false;
       if (secao === "encerrados" && !p.encerrado) return false;
+      if (secao === "avaliacoes" && !p.encerrado) return false;
       var s = search.toLowerCase();
       var matchSearch = !search || [p.id, p.numero, p.cliente, p.parteContraria, p.responsavel, p.situacao].some(function(f) { return f && f.toLowerCase().includes(s); });
       var matchTipo = filterTipo === "Todos" || p.tipo === filterTipo;
@@ -279,7 +280,12 @@ export default function App() {
       var matchResp = filterResponsavel === "Todos" || p.responsavel === filterResponsavel;
       return matchSearch && matchTipo && matchFase && matchAlerta && matchAlertaCli && matchResp;
     });
-    if (sortBy === "diasProc") result.sort(function(a, b) { return (b.diasProc === null ? -1 : b.diasProc) - (a.diasProc === null ? -1 : a.diasProc); });
+    if (secao === "avaliacoes") {
+      result.sort(function(a, b) {
+        var avalOrder = function(p) { var av = (p.avaliacao || "").toLowerCase().trim(); if (!av) return 0; if (av === "solicitada") return 1; return 2; };
+        return avalOrder(a) - avalOrder(b);
+      });
+    } else if (sortBy === "diasProc") result.sort(function(a, b) { return (b.diasProc === null ? -1 : b.diasProc) - (a.diasProc === null ? -1 : a.diasProc); });
     else if (sortBy === "diasCliente") result.sort(function(a, b) { return (b.diasCliente === null ? -1 : b.diasCliente) - (a.diasCliente === null ? -1 : a.diasCliente); });
     else if (sortBy === "cliente") result.sort(function(a, b) { return (a.cliente || "").localeCompare(b.cliente || ""); });
     else if (sortBy === "alerta") result.sort(function(a, b) { return a.alertaProc.priority - b.alertaProc.priority; });
@@ -290,12 +296,18 @@ export default function App() {
   var encerrados = useMemo(function() { return enriched.filter(function(p) { return p.encerrado; }); }, [enriched]);
 
   const stats = useMemo(function() {
+    var avalPendente = encerrados.filter(function(p) { return !p.avaliacao || p.avaliacao.trim() === ""; }).length;
+    var avalSolicitada = encerrados.filter(function(p) { return p.avaliacao && p.avaliacao.toLowerCase().trim() === "solicitada"; }).length;
+    var avalRecebida = encerrados.filter(function(p) { return p.avaliacao && p.avaliacao.toLowerCase().trim() === "recebida"; }).length;
     return {
       total: ativos.length,
       encerrados: encerrados.length,
       critico: ativos.filter(function(p) { return p.alertaProc.label === "CRÍTICO"; }).length,
       atencao: ativos.filter(function(p) { return p.alertaProc.label === "ATENÇÃO"; }).length,
       semPosCliente: ativos.filter(function(p) { return p.alertaCliente.label === "URGENTE" || p.alertaCliente.label === "ATRASO"; }).length,
+      avalPendente: avalPendente,
+      avalSolicitada: avalSolicitada,
+      avalRecebida: avalRecebida,
     };
   }, [ativos, encerrados]);
 
@@ -366,6 +378,9 @@ export default function App() {
           </button>
           <button onClick={function() { setSecao("encerrados"); }} style={{ padding: "10px 24px", borderRadius: "10px 10px 0 0", border: "none", background: secao === "encerrados" ? "#fff" : "rgba(255,255,255,0.4)", fontSize: "14px", fontWeight: 700, cursor: "pointer", color: secao === "encerrados" ? "#485158" : "#94a3b8", borderBottom: secao === "encerrados" ? "3px solid #94a3b8" : "3px solid transparent", transition: "all 0.15s" }}>
             Encerrados <span style={{ fontSize: "12px", fontWeight: 600, color: "#94a3b8", marginLeft: "6px" }}>{encerrados.length}</span>
+          </button>
+          <button onClick={function() { setSecao("avaliacoes"); }} style={{ padding: "10px 24px", borderRadius: "10px 10px 0 0", border: "none", background: secao === "avaliacoes" ? "#fff" : "rgba(255,255,255,0.4)", fontSize: "14px", fontWeight: 700, cursor: "pointer", color: secao === "avaliacoes" ? "#485158" : "#94a3b8", borderBottom: secao === "avaliacoes" ? "3px solid #f59e0b" : "3px solid transparent", transition: "all 0.15s" }}>
+            Avaliações <span style={{ fontSize: "12px", fontWeight: 600, color: stats.avalPendente > 0 ? "#ef4444" : "#22c55e", marginLeft: "6px" }}>{stats.avalPendente} pendente{stats.avalPendente !== 1 ? "s" : ""}</span>
           </button>
         </div>
         <div className="grid-filters" style={{ background: "#fff", borderRadius: "12px", padding: "14px 18px", display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-end", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
@@ -442,8 +457,28 @@ export default function App() {
 
       <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "14px 28px 40px" }}>
         <div style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "10px", fontWeight: 500 }}>
-          {filtered.length} processo{filtered.length !== 1 ? "s" : ""} {secao === "ativos" ? "ativos" : "encerrados"}
+          {filtered.length} processo{filtered.length !== 1 ? "s" : ""} {secao === "ativos" ? "ativos" : secao === "avaliacoes" ? "encerrados" : "encerrados"}
         </div>
+
+        {secao === "avaliacoes" && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginBottom: "20px" }}>
+            <div style={{ background: "#fff", borderRadius: "12px", padding: "16px 18px", border: "1px solid #fca5a5", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "#ef4444", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>Pendentes</div>
+              <div style={{ fontSize: "28px", fontWeight: 800, color: "#ef4444" }}>{stats.avalPendente}</div>
+              <div style={{ fontSize: "11px", color: "#94a3b8" }}>Ainda não solicitamos</div>
+            </div>
+            <div style={{ background: "#fff", borderRadius: "12px", padding: "16px 18px", border: "1px solid #fcd34d", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>Solicitadas</div>
+              <div style={{ fontSize: "28px", fontWeight: 800, color: "#f59e0b" }}>{stats.avalSolicitada}</div>
+              <div style={{ fontSize: "11px", color: "#94a3b8" }}>Aguardando cliente</div>
+            </div>
+            <div style={{ background: "#fff", borderRadius: "12px", padding: "16px 18px", border: "1px solid #86efac", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "#22c55e", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>Recebidas</div>
+              <div style={{ fontSize: "28px", fontWeight: 800, color: "#22c55e" }}>{stats.avalRecebida}</div>
+              <div style={{ fontSize: "11px", color: "#94a3b8" }}>Cliente avaliou</div>
+            </div>
+          </div>
+        )}
 
         {loading && processos.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 20px", color: "#94a3b8" }}>
@@ -459,6 +494,12 @@ export default function App() {
                     <div>
                       <div style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", marginBottom: "2px" }}>
                         {p.cliente || "—"} <span style={{ fontWeight: 400, color: "#cbd5e1", margin: "0 2px" }}>&times;</span> <span style={{ fontWeight: 500, color: "#64748b" }}>{p.parteContraria || "—"}</span>
+                        {p.encerrado && (function() {
+                          var av = (p.avaliacao || "").toLowerCase().trim();
+                          if (av === "recebida") return <span style={{ marginLeft: "8px", padding: "2px 8px", borderRadius: "10px", fontSize: "9px", fontWeight: 700, background: "#f0fdf4", color: "#22c55e", border: "1px solid #86efac" }}>★ AVALIADO</span>;
+                          if (av === "solicitada") return <span style={{ marginLeft: "8px", padding: "2px 8px", borderRadius: "10px", fontSize: "9px", fontWeight: 700, background: "#fffbeb", color: "#f59e0b", border: "1px solid #fcd34d" }}>SOLICITADA</span>;
+                          return <span style={{ marginLeft: "8px", padding: "2px 8px", borderRadius: "10px", fontSize: "9px", fontWeight: 700, background: "#fef2f2", color: "#ef4444", border: "1px solid #fca5a5" }}>PEDIR AVALIAÇÃO</span>;
+                        })()}
                       </div>
                       <div style={{ fontSize: "11px", color: "#94a3b8" }}>
                         {p.id ? <span style={{ background: "#f5f0e6", padding: "1px 7px", borderRadius: "4px", fontWeight: 500, color: "#caa461" }}>{p.id}</span> : null}{p.id ? " \u00b7 " : ""}{p.numero} &middot; <span style={{ color: "#caa461", fontWeight: 600 }}>{p.responsavel}</span> &middot; <span style={{ color: "#64748b", fontWeight: 500 }}>{p.tipo}</span> &middot; <span style={{ background: "#f1f5f9", padding: "1px 7px", borderRadius: "4px", fontWeight: 600, color: "#475569" }}>{p.fase}</span>
