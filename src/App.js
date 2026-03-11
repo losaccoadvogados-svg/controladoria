@@ -220,6 +220,7 @@ export default function App() {
   const [modalProcesso, setModalProcesso] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const [view, setView] = useState("list");
+  const [secao, setSecao] = useState("ativos");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -256,14 +257,19 @@ export default function App() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  const FASES_ENCERRADAS = ["Concluído", "Arquivado", "Cancelado", "concluído", "arquivado", "cancelado"];
+
   const enriched = useMemo(() => processos.map(p => {
     const diasProc = diasDesde(p.dataMovimentacao);
     const diasCliente = diasDesde(p.dataPosicionamento);
-    return { ...p, diasProc: diasProc, alertaProc: getAlerta(diasProc), diasCliente: diasCliente, alertaCliente: getAlertaCliente(diasCliente) };
+    const encerrado = FASES_ENCERRADAS.some(function(f) { return p.fase && p.fase.toLowerCase().trim() === f.toLowerCase(); });
+    return { ...p, diasProc: diasProc, alertaProc: getAlerta(diasProc), diasCliente: diasCliente, alertaCliente: getAlertaCliente(diasCliente), encerrado: encerrado };
   }), [processos]);
 
   const filtered = useMemo(() => {
     var result = enriched.filter(function(p) {
+      if (secao === "ativos" && p.encerrado) return false;
+      if (secao === "encerrados" && !p.encerrado) return false;
       var s = search.toLowerCase();
       var matchSearch = !search || [p.id, p.numero, p.cliente, p.parteContraria, p.responsavel, p.situacao].some(function(f) { return f && f.toLowerCase().includes(s); });
       var matchTipo = filterTipo === "Todos" || p.tipo === filterTipo;
@@ -278,16 +284,20 @@ export default function App() {
     else if (sortBy === "cliente") result.sort(function(a, b) { return (a.cliente || "").localeCompare(b.cliente || ""); });
     else if (sortBy === "alerta") result.sort(function(a, b) { return a.alertaProc.priority - b.alertaProc.priority; });
     return result;
-  }, [enriched, search, filterTipo, filterFase, filterAlerta, filterAlertaCliente, filterResponsavel, sortBy]);
+  }, [enriched, search, filterTipo, filterFase, filterAlerta, filterAlertaCliente, filterResponsavel, sortBy, secao]);
+
+  var ativos = useMemo(function() { return enriched.filter(function(p) { return !p.encerrado; }); }, [enriched]);
+  var encerrados = useMemo(function() { return enriched.filter(function(p) { return p.encerrado; }); }, [enriched]);
 
   const stats = useMemo(function() {
     return {
-      total: enriched.length,
-      critico: enriched.filter(function(p) { return p.alertaProc.label === "CRÍTICO"; }).length,
-      atencao: enriched.filter(function(p) { return p.alertaProc.label === "ATENÇÃO"; }).length,
-      semPosCliente: enriched.filter(function(p) { return p.alertaCliente.label === "URGENTE" || p.alertaCliente.label === "ATRASO"; }).length,
+      total: ativos.length,
+      encerrados: encerrados.length,
+      critico: ativos.filter(function(p) { return p.alertaProc.label === "CRÍTICO"; }).length,
+      atencao: ativos.filter(function(p) { return p.alertaProc.label === "ATENÇÃO"; }).length,
+      semPosCliente: ativos.filter(function(p) { return p.alertaCliente.label === "URGENTE" || p.alertaCliente.label === "ATRASO"; }).length,
     };
-  }, [enriched]);
+  }, [ativos, encerrados]);
 
   var selStyle = { padding: "8px 12px", borderRadius: "8px", border: "1.5px solid #e2e8f0", fontSize: "12px", background: "#fff", color: "#475569", outline: "none", cursor: "pointer" };
 
@@ -344,11 +354,20 @@ export default function App() {
             <StatCard label="Proc. Críticos" value={stats.critico} color="#ef4444" sub="+90 dias s/ movimentação" />
             <StatCard label="Proc. Atenção" value={stats.atencao} color="#f59e0b" sub="61-90 dias s/ movimentação" />
             <StatCard label="Clientes s/ Retorno" value={stats.semPosCliente} color="#f97316" sub="+30 dias s/ posicionamento" />
+            <StatCard label="Encerrados" value={stats.encerrados} color="#94a3b8" sub="Concluídos e arquivados" />
           </div>
         </div>
       </div>
 
       <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "16px 28px 0" }}>
+        <div style={{ display: "flex", gap: "4px", marginBottom: "12px" }}>
+          <button onClick={function() { setSecao("ativos"); }} style={{ padding: "10px 24px", borderRadius: "10px 10px 0 0", border: "none", background: secao === "ativos" ? "#fff" : "rgba(255,255,255,0.4)", fontSize: "14px", fontWeight: 700, cursor: "pointer", color: secao === "ativos" ? "#485158" : "#94a3b8", borderBottom: secao === "ativos" ? "3px solid #caa461" : "3px solid transparent", transition: "all 0.15s" }}>
+            Ativos <span style={{ fontSize: "12px", fontWeight: 600, color: "#caa461", marginLeft: "6px" }}>{ativos.length}</span>
+          </button>
+          <button onClick={function() { setSecao("encerrados"); }} style={{ padding: "10px 24px", borderRadius: "10px 10px 0 0", border: "none", background: secao === "encerrados" ? "#fff" : "rgba(255,255,255,0.4)", fontSize: "14px", fontWeight: 700, cursor: "pointer", color: secao === "encerrados" ? "#485158" : "#94a3b8", borderBottom: secao === "encerrados" ? "3px solid #94a3b8" : "3px solid transparent", transition: "all 0.15s" }}>
+            Encerrados <span style={{ fontSize: "12px", fontWeight: 600, color: "#94a3b8", marginLeft: "6px" }}>{encerrados.length}</span>
+          </button>
+        </div>
         <div className="grid-filters" style={{ background: "#fff", borderRadius: "12px", padding: "14px 18px", display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-end", boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
           <div style={{ flex: "1 1 200px" }}>
             <label style={{ display: "block", fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>Busca</label>
@@ -423,7 +442,7 @@ export default function App() {
 
       <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "14px 28px 40px" }}>
         <div style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "10px", fontWeight: 500 }}>
-          {filtered.length} processo{filtered.length !== 1 ? "s" : ""} &middot; {enriched.length} total
+          {filtered.length} processo{filtered.length !== 1 ? "s" : ""} {secao === "ativos" ? "ativos" : "encerrados"}
         </div>
 
         {loading && processos.length === 0 ? (
